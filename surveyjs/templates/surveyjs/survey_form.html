@@ -1,0 +1,58 @@
+
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+    
+<p>
+    <a class="btn btn-light" href="{% url 'surveyjs_Survey_list' %}">
+    Survey Listing
+    </a>
+</p>
+    
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  {{form.errors}}
+  <div class="form-group row">
+      <label class="col-sm-2 col-form-label" for="created">created: </label>
+      <input class="form-control col-sm-10"
+         id="created" type="datetime-local"
+         name="created" value="{{ object.created }}" disabled>
+  </div>
+  <div class="form-group row">
+      <label class="col-sm-2 col-form-label" for="post_id">post_id: </label>
+      <input class="form-control col-sm-10"
+         id="post_id" type="text"
+         name="post_id" value="{{ object.post_id }}">
+  </div>
+  <div class="form-group row">
+      <label class="col-sm-2 col-form-label" for="last_updated">last_updated: </label>
+      <input class="form-control col-sm-10"
+         id="last_updated" type="datetime-local"
+         name="last_updated" value="{{ object.last_updated }}" disabled>
+  </div>
+  <div class="form-group row">
+      <label class="col-sm-2 col-form-label" for="json">json: </label>
+      <input class="form-control col-sm-10"
+         id="json" type="text"
+         name="json" value="{{ object.json }}">
+  </div>
+  <div class="form-group row">
+      <label class="col-sm-2 col-form-label" for="name">name: </label>
+      <input class="form-control col-sm-10"
+         id="name" type="text"
+         name="name" value="{{ object.name }}">
+  </div>
+  <div class="form-group row">
+      <label class="col-sm-2 col-form-label" for="is_active">is_active: </label>
+      <input class="form-control col-sm-10"
+         id="is_active" type="text"
+         name="is_active" value="{{ object.is_active }}">
+  </div>
+  <div class="form-group row">
+      <label class="col-sm-2 col-form-label" for="user">user: </label>
+      {{ form.user }}
+  </div>
+  <input type="submit" value="Save" class="btn btn-primary">
+</form>
+
+{% endblock %}

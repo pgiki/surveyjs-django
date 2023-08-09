@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="m-2"><h4>surveyjs</h4></div>
+<div class="m-2"><a class="btn btn-light" href="{% url 'surveyjs_Attachment_list' %}">Attachment Listing</a></div>
+<div class="m-2"><a class="btn btn-light" href="{% url 'surveyjs_Survey_list' %}">Survey Listing</a></div>
+<div class="m-2"><a class="btn btn-light" href="{% url 'surveyjs_Result_list' %}">Result Listing</a></div>
+{% endblock %}
