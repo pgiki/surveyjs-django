@@ -44,7 +44,7 @@ class SurveyViewSet(MixinViewSet, viewsets.ModelViewSet):
         creates responses in bulk from the survey data
         """
         qs = self.filter_queryset(self.get_queryset().filter(is_active=True))
-        data = self.serializer_class(qs, many=True).data
+        data = self.serializer_class(qs, many=True, context=self.get_serializer_context()).data
         return Response(data)
 
     @action(
@@ -59,7 +59,7 @@ class SurveyViewSet(MixinViewSet, viewsets.ModelViewSet):
         """
         survey_id = request.GET.get('surveyId', 0)
         qs = self.filter_queryset(self.get_queryset()).filter(pk=survey_id).first()
-        data = self.serializer_class(qs).data
+        data = self.serializer_class(qs, context=self.get_serializer_context()).data
         return Response(data)
     
     @action(
@@ -100,7 +100,9 @@ class SurveyViewSet(MixinViewSet, viewsets.ModelViewSet):
             survey_data = copy(request.data)
             if not survey_data.get('name'):
                 survey_data['name'] = str(uuid4())
-            ser = self.serializer_class(data=survey_data)
+            if user.is_authenticated:
+                survey_data['user'] = user.id
+            ser = self.serializer_class(data=survey_data, context=self.get_serializer_context())
             if ser.is_valid():
                 ser.save()
                 return Response(ser.data, status=201)
@@ -129,7 +131,7 @@ class SurveyViewSet(MixinViewSet, viewsets.ModelViewSet):
                 update_fields.append('name')
             survey.json=survey_json
             survey.save(update_fields=update_fields)
-            return Response(self.serializer_class(survey).data)
+            return Response(self.serializer_class(survey, context=self.get_serializer_context()).data)
         return Response({})
     
     @action(
@@ -148,7 +150,7 @@ class SurveyViewSet(MixinViewSet, viewsets.ModelViewSet):
         post_id = request.data.get('postId')
         survey = models.Survey.objects.get(post_id=post_id)
         if "submit_survey" in get_perms(user, survey):
-            ser = serializers.ResultSerializer(data={"survey": survey.id, "data": data})
+            ser = serializers.ResultSerializer(data={"survey": survey.id, "data": data}, context=self.get_serializer_context())
             if ser.is_valid():
                 ser.save()
                 return Response(ser.data)
@@ -191,7 +193,7 @@ class SurveyViewSet(MixinViewSet, viewsets.ModelViewSet):
         survey = models.Survey.objects.get(post_id=survey_id)
         if "survey_view_result" in get_perms(user, survey):
             qs = get_objects_for_user(user, perms=['surveyjs.view_result']).filter(survey=survey)
-            return Response(serializers.ResultSerializer(qs, many=True).data)
+            return Response(serializers.ResultSerializer(qs, many=True, context=self.get_serializer_context()).data)
         return Response({}, status=403) 
 
 class ResultViewSet(MixinViewSet, viewsets.ModelViewSet):

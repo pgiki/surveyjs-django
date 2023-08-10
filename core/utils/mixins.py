@@ -511,8 +511,8 @@ class MixinViewSet(QueryArgumentsMixin):
         return uploaded_image
 
     def update(self, request, *args, **kwargs):
+        data = {key: value for (key, value) in request.data.items()}
         obj = self.get_object()
-        data = request.data
         user = request.user
 
         if not self.get_has_perm(f"change", obj=obj, user=user):
@@ -577,10 +577,8 @@ class MixinViewSet(QueryArgumentsMixin):
                 assign_perm(f"{p}_{model_name}", group, obj)
 
     def create(self, request, *args, **kwargs):
-        try:
-            data = request.data.copy()
-        except:
-            data = request.data
+        # get a deep copy of the data. Useful to save data with file upload
+        data = {key: value for (key, value) in request.data.items()}
         user = request.user
         default_currency = helpers.get_class_attr(
             user, "profile.currency", settings.DEFAULT_CURRENCY

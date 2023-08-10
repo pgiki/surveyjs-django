@@ -240,5 +240,3 @@ if PERMISSIONS_SCHEMA_PATH:
             PERMISSIONS_SCHEMA = yaml.safe_load(stream)
         except yaml.YAMLError as exc:
             print(exc)
-
-print(PERMISSIONS_SCHEMA)
