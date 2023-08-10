@@ -5,7 +5,7 @@ from django.conf import settings
 
 
 class Attachment(models.Model):
-
+# TODO: work in progress for later to save uploaded files to database
     # Relationships
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, blank=True, null=True, help_text='The person who uploaded the document')
     result = models.ForeignKey("surveyjs.Result", on_delete=models.CASCADE, null=True, blank=True, help_text='The result which this attachment is originated to')
