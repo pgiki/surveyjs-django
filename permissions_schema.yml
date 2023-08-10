@@ -1,0 +1,31 @@
+# This is a schema file to help setting default permissions when the object is create
+surveyjs.Survey:
+  - - user.username
+    - - view_survey
+      - change_survey
+      - add_survey
+      - delete_survey
+      - submit_survey
+      - survey_view_result
+  - - group:everyone
+    - -  view_survey
+      - submit_survey
+
+surveyjs.Result:
+  - - user.username
+    - - view_result
+  - - survey.user.username
+    - - view_result
+      - change_result
+      - add_result
+      - delete_result
+  - - eval:get_users_with_perms(obj, only_with_perms_in =['survey_view_result']).values_list('username', flat=True)
+    - - view_result
+
+surveyjs.Attachment:
+  - - user.username
+    - - view_attachment
+      - change_attachment
+      - add_attachment
+      - delete_attachment
+    - mama

@@ -19,13 +19,7 @@ class Attachment(models.Model):
         pass
 
     def __str__(self):
-        return str(self.pk)
-
-    def get_absolute_url(self):
-        return reverse("surveyjs_Attachment_detail", args=(self.pk,))
-
-    def get_update_url(self):
-        return reverse("surveyjs_Attachment_update", args=(self.pk,))
+        return str(self.file)
 
 
 
@@ -43,7 +37,7 @@ class Survey(models.Model):
     is_active = models.BooleanField(default=True, blank=True)
 
     class Meta:
-        permissions = (("submit_survey", "Can submit survey"),("view_survey_results", "Can view survey results"),)
+        permissions = (("submit_survey", "Can submit survey"),("survey_view_result", "Can view survey results"),)
 
     def save(self, *args, **kwargs):
         if not self.name:
@@ -52,12 +46,6 @@ class Survey(models.Model):
 
     def __str__(self):
         return str(self.name)
-
-    def get_absolute_url(self):
-        return reverse("surveyjs_Survey_detail", args=(self.pk,))
-
-    def get_update_url(self):
-        return reverse("surveyjs_Survey_update", args=(self.pk,))
 
 
 
@@ -76,11 +64,6 @@ class Result(models.Model):
         pass
 
     def __str__(self):
-        return str(self.pk)
+        return str(self.data)[:10]
 
-    def get_absolute_url(self):
-        return reverse("surveyjs_Result_detail", args=(self.pk,))
-
-    def get_update_url(self):
-        return reverse("surveyjs_Result_update", args=(self.pk,))
 

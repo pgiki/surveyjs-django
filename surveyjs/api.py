@@ -1,5 +1,6 @@
 from copy import copy
 from uuid import uuid4
+from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, permissions
 from . import serializers
 from . import models
@@ -9,10 +10,6 @@ from rest_framework.response import Response
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from django.utils.translation import gettext as _
 from guardian.shortcuts import (
-    assign_perm,
-    get_users_with_perms,
-    get_groups_with_perms,
-    remove_perm,
     get_perms,
     get_objects_for_user,
 )
@@ -99,7 +96,7 @@ class SurveyViewSet(MixinViewSet, viewsets.ModelViewSet):
         """
         user = request.user
         data = {}
-        if user.has_perm("add_survey") or True:
+        if user.has_perm("add_survey"):
             survey_data = copy(request.data)
             if not survey_data.get('name'):
                 survey_data['name'] = str(uuid4())
@@ -171,11 +168,11 @@ class SurveyViewSet(MixinViewSet, viewsets.ModelViewSet):
         Change the name of the survey
         """
         user = request.user
-        survey_id = request.data.get('id')
-        survey = models.Survey.objects.get(id=survey_id)
+        survey_id = request.GET.get('id', request.data.get('id'))
+        survey =  get_object_or_404(models.Survey, id=survey_id)
         if "delete_survey" in get_perms(user, survey):
             models.Survey.objects.filter(id=survey_id).delete()
-            return Response({"success": True})
+            return Response({"success": True, "id": survey_id})
         return Response({}, status=403) 
     
     @action(
@@ -192,7 +189,7 @@ class SurveyViewSet(MixinViewSet, viewsets.ModelViewSet):
         user = request.user
         survey_id = request.GET.get('postId')
         survey = models.Survey.objects.get(post_id=survey_id)
-        if "view_survey_results" in get_perms(user, survey):
+        if "survey_view_result" in get_perms(user, survey):
             qs = get_objects_for_user(user, perms=['surveyjs.view_result']).filter(survey=survey)
             return Response(serializers.ResultSerializer(qs, many=True).data)
         return Response({}, status=403) 

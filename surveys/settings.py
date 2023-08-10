@@ -8,6 +8,7 @@ https://docs.djangoproject.com/
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+import yaml
 
 load_dotenv()  # take environment variables from .env
 IS_LOCAL = os.environ.get("IS_LOCAL")
@@ -85,6 +86,7 @@ AUTHENTICATION_BACKENDS = (
 ANONYMOUS_USER_NAME = 'nobody'
 EVERYONE_GROUP_NAME = 'everyone'
 APPEND_SLASH=False
+SITE_ID=1
 
 ROOT_URLCONF = 'surveys.urls'
 ALLOWED_HOSTS = ["*"]
@@ -228,3 +230,15 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static")
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "surveyjs-react-client/static"),
 ]
+# permissions configuration. Handy for setting default configurations when items are created for the first time
+PERMISSIONS_SCHEMA_PATH = os.getenv('PERMISSIONS_SCHEMA_PATH')
+PERMISSIONS_SCHEMA={}
+
+if PERMISSIONS_SCHEMA_PATH:
+    with open(PERMISSIONS_SCHEMA_PATH, "r") as stream:
+        try:
+            PERMISSIONS_SCHEMA = yaml.safe_load(stream)
+        except yaml.YAMLError as exc:
+            print(exc)
+
+print(PERMISSIONS_SCHEMA)

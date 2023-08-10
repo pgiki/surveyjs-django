@@ -12,6 +12,7 @@ from guardian.models import Group
 from functools import reduce
 import operator
 import phonenumbers
+from django.conf import settings
 
 # permissions
 from guardian.core import ObjectPermissionChecker
@@ -21,10 +22,9 @@ from guardian.shortcuts import (
     get_users_with_perms,
     get_groups_with_perms,
     remove_perm,
-    get_objects_for_user,
+    get_objects_for_user,  
 )
 import phonenumbers
-from django.utils.module_loading import import_string
 from notifications.signals import notify
 import requests
 import json
@@ -33,6 +33,8 @@ from django.utils import timezone
 # django models
 User = get_user_model()
 
+def  emit_event(event_name, data, room=None):
+    pass
 
 def get_bot_user():
     return User.objects.filter(is_superuser=True).first()
@@ -40,11 +42,6 @@ def get_bot_user():
 
 def get_system_user():
     return User.objects.filter(is_superuser=True).first()
-
-
-def emit_event(event, data, **kwargs):
-    return sio.emit(event, data, **kwargs)
-
 
 def inherit_permissions(
     from_obj, to_object, perm_transformer=None, permissions=None, remove=False
@@ -229,68 +226,92 @@ def replace_variables(s="", variables=dict()):
     return s
 
 
-def handle_group_permissions(instance, is_created=True, action="add"):
-    group_permissions = []
-    if hasattr(instance, "group_permissions"):
-        group_permissions = instance.group_permissions(is_created=is_created)
+def handle_group_permissions(instance, group_permissions=[],  action="add"):
+    """Get all permissions from yml schema document and then assign to the user accordingly
+    Args:
+        instance (_type_): The object to assign permissions to
+        action (str, optional): add|remove. Defaults to "add".
+        group_permissions (list, optional) the list of permissions to be assigned. If not given defaults to the schema file
+    Returns:
+        _type_: _description_
+    """
+    if not group_permissions:
+        obj_content_type = ContentType.objects.get_for_model(instance)
+        model_path = f'{obj_content_type.app_label}.{instance.__class__.__name__}'
+        group_permissions = settings.PERMISSIONS_SCHEMA.get(model_path, [])
 
     def get_group_name(item, category=None):
-        if type(item) is str:  # custo group name
+        if type(item) is str:  # custom group name
             return f"{item} {category}" if category else item
-        return (
-            item.get_group_name(category)
-            if (item and hasattr(item, "get_group_name"))
-            else None
-        )
+        return (item.get_group_name(category) if
+                (item and hasattr(item, "get_group_name")) else None)
 
     def get_object_from_obj(obj, path, default=None):
         if path.startswith("group:"):
             return path.replace("group:", "").strip()
-        return get_class_attr(obj, path, default)
+        if 'eval:' in path:
+            evaluated = eval(path.replace('eval:', ''))
+            return evaluated
+        else:
+            return get_class_attr(obj, path, default)
+        
+    def assign_permissions_to_group(group_name, permissions=[]):
+        group, group_created = Group.objects.get_or_create(name=group_name)
+        if group_created:
+            guessed_username = group_name.split()[0]
+            guessed_user = User.objects.filter(
+                username=guessed_username).first()
+            if guessed_user:
+                # give view only permission to user who is likely the owner of this group
+                assign_permissions_to_object(
+                    obj=group,
+                    user_or_group=guessed_user,
+                    permissions=["view_group"],
+                )
+        if action == "add":
+            assign_permissions_to_object(
+                obj=instance,
+                user_or_group=group,
+                permissions=permissions,
+            )
+        elif action == "remove":
+            for p in permissions:
+                remove_perm(p, group, instance)
 
     for group_permission in group_permissions:
+        category = ''
+        if len(group_permission)>2:
+            category = group_permission[2]
         if group_permission:
-            items = [
-                get_object_from_obj(instance, path)
-                for path in group_permission[0].split("+")
-            ]
-            group_name = " | ".join(
-                list(
-                    filter(
-                        lambda x: not x is None,
-                        [
-                            get_group_name(item, category=group_permission[1])
-                            for item in items
-                        ],
-                    )
-                )
-            ).strip()
+            permissions=group_permission[1]
+            group_name_parts = []
+            _group_name = group_permission[0]
+            for path in _group_name.split("+"):
+                item = get_object_from_obj(instance, path)
+                if not item:
+                    continue
+                # this should be an iterable returned from the eval
+                if not type(item) is str:
+                    for _item in item:
+                        group_name = get_group_name(
+                            _item, category=category)
+                        if group_name:
+                            assign_permissions_to_group(group_name, permissions)
+                else:
+                    group_name_parts.append(item)
+                    group_name = " | ".join(
+                        list(
+                            filter(
+                                lambda x: not x is None,
+                                [
+                                    get_group_name(item, category=category)
+                                    for item in group_name_parts
+                                ],
+                            ))).strip()
+                    if group_name:
+                        assign_permissions_to_group(group_name, permissions)
 
-            if group_name:
-                group, group_created = Group.objects.get_or_create(name=group_name)
-                if group_created:
-                    guessed_username = group_name.split()[0]
-                    guessed_user = User.objects.filter(
-                        username=guessed_username
-                    ).first()
-                    if guessed_user:
-                        # give view only permission to user who is likely the owner of this group
-                        assign_permissions_to_object(
-                            obj=group,
-                            user_or_group=guessed_user,
-                            permissions=["view_group"],
-                        )
-                if action == "add":
-                    assign_permissions_to_object(
-                        obj=instance,
-                        user_or_group=group,
-                        permissions=group_permission[2],
-                    )
-                elif action == "remove":
-                    for p in group_permission[2]:
-                        remove_perm(p, group, instance)
     return True
-
 
 def to_python_value(value):
     if value == "false":
@@ -346,7 +367,6 @@ def format_phone(n, country="TZ"):
         # print("Error format_phone", e, n)
         return (False, n)
 
-
 # chats helpers
 def emit_unread_notifications(user):
     qs_count = (
@@ -361,16 +381,7 @@ def sendsms(phone=None, message=None, url=None, user=None, event=None):
     if not event:
         if user and not phone:
             # get phone from user object
-            PhoneNumber = import_string("core.models.PhoneNumber")
-            phone_number = getattr(
-                user,
-                "phone_number",
-                PhoneNumber.objects.filter(phone=user.username).first(),
-            )
-            if phone_number:
-                phone = phone_number.phone
-            else:
-                {"error": "The user has no phone number"}
+            phone = user.username
         if not phone:
             return {"error": "`phone` or `user` is required"}
 

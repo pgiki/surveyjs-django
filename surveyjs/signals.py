@@ -18,7 +18,7 @@ def Survey_post_save(sender, **kwargs):
 def Result_post_save(sender, **kwargs):
     """ """
     item, created = kwargs["instance"], kwargs["created"]
-    if created:
+    if created or True:
         helpers.handle_group_permissions(item)
         helpers.notify_users(
             users=User.objects.filter(is_superuser=True),

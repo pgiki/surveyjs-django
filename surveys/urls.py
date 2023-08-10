@@ -16,11 +16,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from django.views.generic import TemplateView
 
 
 urlpatterns = [
-    path('', TemplateView.as_view(template_name='surveyjs-react-client/index.html'), name='index'),
-    path('surveyjs/', include('surveyjs.urls')),
+    path('', include('surveyjs.urls')),
     path('admin/', admin.site.urls),
 ]
+
+
