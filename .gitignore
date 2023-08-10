@@ -93,12 +93,7 @@ target/
 *.pyc
 __pycache__/
 local_settings.py
-django-restql-repo
 .env
 db.sqlite3
 .credentials
-survey/data/*
 notebook/*
-migrations
-surveyjs-react-client/*
-# database.json

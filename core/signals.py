@@ -41,7 +41,7 @@ def on_user_username_update_or_create(user):
     Add newly created user to everyone group
     """
     username = user.username
-    everyone = Group.objects.get_or_create(name=settings.getattr('EVERYONE_GROUP_NAME', 'everyone'))[0]
+    everyone = Group.objects.get_or_create(name=getattr(settings, 'EVERYONE_GROUP_NAME', 'everyone'))[0]
     # create group so they can easily share with other users
     self_group = Group.objects.get_or_create(name=username)[0]
     user.groups.add(everyone)
@@ -61,6 +61,6 @@ def user_post_save(sender, **kwargs):
     """
     user, created = kwargs["instance"], kwargs["created"]
     username = user.username
-    if created and username != settings.getattr('ANONYMOUS_USER_NAME', 'nobody'):
+    if created and username != getattr(settings, 'ANONYMOUS_USER_NAME', 'nobody'):
         # create profile automatically too
         on_user_username_update_or_create(user)

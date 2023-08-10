@@ -28,7 +28,7 @@ class UserViewSet(MixinViewSet, viewsets.ModelViewSet):
 
     serializer_class = serializers.UserSerializer
     queryset = serializer_class.Meta.model.objects.all().exclude(
-        username=settings.getattr('ANONYMOUS_USER_NAME', 'nobody')
+        username=getattr(settings, 'ANONYMOUS_USER_NAME', 'nobody')
     )
     filterset_fields = [
         "id",
