@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     "import_export",
     "notifications",
     "django_extensions",
-    "rest_framework_swagger",
+   'drf_yasg',
     #
     "rest_framework",
     "django_filters",
@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     "allauth.socialaccount",
     "dj_rest_auth.registration",
     "corsheaders",
+    'rest_framework_simplejwt',
     # local apps
     "surveyjs.apps.Config",
     "core.apps.Config",
@@ -158,51 +159,6 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-# REST FRAMEWORK
-REST_AUTH_SERIALIZERS = {
-    "USER_DETAILS_SERIALIZER": "core.serializers.UserSerializer",
-    # will be hard migrating here due to having several versions of the app running multiple versions
-    # "REGISTER_SERIALIZER":"core.serializers.UserSerializer",
-}
-
-REST_AUTH_REGISTER_SERIALIZERS = {
-    "REGISTER_SERIALIZER": "core.serializers.UserSerializer",
-}
-
-REST_FRAMEWORK = {"DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema"}
-
-REST_FRAMEWORK.update(
-    {
-        "COERCE_DECIMAL_TO_STRING": False,
-        "DEFAULT_AUTHENTICATION_CLASSES": [
-            'rest_framework.authentication.BasicAuthentication',
-            "rest_framework.authentication.TokenAuthentication",
-            "rest_framework.authentication.SessionAuthentication",
-            # 'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
-        ],
-        "DEFAULT_PERMISSION_CLASSES": [
-            "rest_framework.permissions.IsAuthenticated",
-        ],
-        # 'EXCEPTION_HANDLER': 'activity_log.middleware.exceptionHandler',
-        # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination', 0714769691
-        "DEFAULT_PAGINATION_CLASS": "core.utils.pagination.CustomPagination",
-        "PAGE_SIZE": 10,
-        "DEFAULT_FILTER_BACKENDS": [  # TODO: Remove if changes to elastic search
-            "django_filters.rest_framework.DjangoFilterBackend",
-        ],
-        "DEFAULT_RENDERER_CLASSES": [
-            "rest_framework.renderers.JSONRenderer",
-            "rest_framework.renderers.BrowsableAPIRenderer",
-            "rest_framework.renderers.TemplateHTMLRenderer",
-        ],
-        "DEFAULT_PARSER_CLASSES": [
-            "rest_framework.parsers.JSONParser",
-            "rest_framework.parsers.FormParser",
-            "rest_framework.parsers.MultiPartParser",
-            # 'rest_framework.parsers.FileUploadParser',
-        ],
-    }
-)
 
 
 # Internationalization
@@ -240,3 +196,5 @@ if PERMISSIONS_SCHEMA_PATH:
             PERMISSIONS_SCHEMA = yaml.safe_load(stream)
         except yaml.YAMLError as exc:
             print(exc)
+
+from .other_settings.rest_framework import *

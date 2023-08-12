@@ -21,4 +21,5 @@ pandas
 django-restql
 django-admin-interface
 django-notifications-hq
-django-rest-swagger
+djangorestframework-simplejwt
+drf-yasg[validation]

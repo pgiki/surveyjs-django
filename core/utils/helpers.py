@@ -80,6 +80,8 @@ def inherit_permissions(
 
 def get_permissions(obj=None, user=None):
     try:
+        if not hasattr(user, '_meta'):
+            return []
         checker = ObjectPermissionChecker(user)  # we can pass user or group
         return checker.get_perms(obj)
     except Exception as e:
