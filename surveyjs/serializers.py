@@ -62,7 +62,6 @@ class ResultSerializer(DynamicFieldsMixin, NestedModelSerializer):
         SurveySerializer,
         accept_pk=True,
         required=False,
-        default=serializers.CurrentUserDefault(),
         create_ops=["create"],
         update_ops=["add", "create", "remove", "update"],
     )
