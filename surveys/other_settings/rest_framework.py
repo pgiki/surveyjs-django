@@ -6,13 +6,13 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.TokenAuthentication",
         "rest_framework.authentication.SessionAuthentication",
-        "dj_rest_auth.jwt_auth.JWTCookieAuthentication"
+        "dj_rest_auth.jwt_auth.JWTCookieAuthentication",
     ],
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
     ],
     # 'EXCEPTION_HANDLER': 'activity_log.middleware.exceptionHandler',
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     # "DEFAULT_PAGINATION_CLASS": "core.utils.pagination.CustomPagination",
     "PAGE_SIZE": 10,
     "DEFAULT_FILTER_BACKENDS": [  # TODO: Remove if changes to elastic search
@@ -33,14 +33,16 @@ REST_FRAMEWORK = {
 
 SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": timedelta(days=365),
-    "ACCESS_TOKEN_LIFETIME":timedelta(days=365),
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=365),
     "ROTATE_REFRESH_TOKENS": True,
 }
 REST_AUTH = {
-    'USE_JWT': True,
-    'JWT_AUTH_COOKIE': 'jwt-auth',
-    'JWT_AUTH_REFRESH_COOKIE': 'jwt-refresh-token',
-    'JWT_AUTH_RETURN_EXPIRATION': True,
-     "REGISTER_SERIALIZER": "core.serializers.UserSerializer",
-     "USER_DETAILS_SERIALIZER": "core.serializers.UserSerializer",
+    "USE_JWT": True,
+    "JWT_AUTH_COOKIE": "jwt-auth",
+    "JWT_AUTH_REFRESH_COOKIE": "jwt-refresh-token",
+    "JWT_AUTH_RETURN_EXPIRATION": True,
+    "REGISTER_SERIALIZER": "core.serializers.UserSerializer",
+    "USER_DETAILS_SERIALIZER": "core.serializers.UserSerializer",
 }
+# account settings
+ACCOUNT_AUTHENTICATION_METHOD = "username_email"
