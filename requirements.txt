@@ -7,8 +7,8 @@ django-import-export
 humanize
 django-seed
 django-filter
-dj-rest-auth
-django-allauth
+dj-rest-auth>=5.0.1
+django-allauth>=0.58.0
 django-cors-headers
 pyotp
 dotty-dict
