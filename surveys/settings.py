@@ -20,16 +20,16 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('SECRET_KEY')
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
-CSRF_TRUSTED_ORIGINS=['http://*', 'https://*']
+CSRF_TRUSTED_ORIGINS = ["http://*", "https://*"]
 # Application definition
 INSTALLED_APPS = [
-   "admin_interface",
+    "admin_interface",
     "colorfield",
     "django.contrib.admin",
     "django.contrib.auth",
@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     "import_export",
     "notifications",
     "django_extensions",
-   'drf_yasg',
+    "drf_yasg",
     #
     "rest_framework",
     "django_filters",
@@ -58,12 +58,11 @@ INSTALLED_APPS = [
     "allauth.socialaccount",
     "dj_rest_auth.registration",
     "corsheaders",
-    'rest_framework_simplejwt',
+    "rest_framework_simplejwt",
     # local apps
     "surveyjs.apps.Config",
     "core.apps.Config",
 ]
-
 
 
 MIDDLEWARE = [
@@ -78,45 +77,49 @@ MIDDLEWARE = [
     # for logging activity
     "request_logging.middleware.LoggingMiddleware",
     "django.middleware.locale.LocaleMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
 ]
 # for guardian
 AUTHENTICATION_BACKENDS = (
     "django.contrib.auth.backends.ModelBackend",  # default
     "guardian.backends.ObjectPermissionBackend",
 )
-ANONYMOUS_USER_NAME = 'nobody'
-EVERYONE_GROUP_NAME = 'everyone'
-APPEND_SLASH=False
-SITE_ID=1
+ANONYMOUS_USER_NAME = "nobody"
+EVERYONE_GROUP_NAME = "everyone"
+APPEND_SLASH = False
+SITE_ID = 1
 
-ROOT_URLCONF = 'surveys.urls'
+ROOT_URLCONF = "surveys.urls"
 ALLOWED_HOSTS = ["*"]
 X_FRAME_OPTIONS = "SAMEORIGIN"
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 # SILENCED_SYSTEM_CHECKS = ["security.W019"]
 CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOW_ALL_ORIGINS = True # If this is used then `CORS_ALLOWED_ORIGINS` will not have any effect
+CORS_ALLOW_ALL_ORIGINS = (
+    True  # If this is used then `CORS_ALLOWED_ORIGINS` will not have any effect
+)
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOWED_ORIGINS = [
-] # If this is used, then not need to use `CORS_ALLOW_ALL_ORIGINS = True`
+CORS_ALLOWED_ORIGINS = (
+    []
+)  # If this is used, then not need to use `CORS_ALLOW_ALL_ORIGINS = True`
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['templates', ''],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": ["templates", ""],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'surveys.wsgi.application'
+WSGI_APPLICATION = "surveys.wsgi.application"
 
 
 # Database
@@ -147,16 +150,16 @@ if os.getenv("IS_LOCAL"):
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
@@ -164,9 +167,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = "UTC"
 
 USE_I18N = True
 
@@ -187,8 +190,8 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "surveyjs-react-client/static"),
 ]
 # permissions configuration. Handy for setting default configurations when items are created for the first time
-PERMISSIONS_SCHEMA_PATH = os.getenv('PERMISSIONS_SCHEMA_PATH')
-PERMISSIONS_SCHEMA={}
+PERMISSIONS_SCHEMA_PATH = os.getenv("PERMISSIONS_SCHEMA_PATH")
+PERMISSIONS_SCHEMA = {}
 
 if PERMISSIONS_SCHEMA_PATH:
     with open(PERMISSIONS_SCHEMA_PATH, "r") as stream:
