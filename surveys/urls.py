@@ -22,6 +22,7 @@ urlpatterns = [
     path('', include('surveyjs.urls')),
     path('core/', include('core.urls')),
     path('admin/', admin.site.urls),
+    path("accounts/", include("allauth.urls")),
 ]
 
 

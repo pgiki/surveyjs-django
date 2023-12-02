@@ -56,6 +56,8 @@ INSTALLED_APPS = [
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
+    "allauth.socialaccount.providers.openid_connect",
+
     "dj_rest_auth.registration",
     "corsheaders",
     "rest_framework_simplejwt",
@@ -201,3 +203,4 @@ if PERMISSIONS_SCHEMA_PATH:
             print(exc)
 
 from .other_settings.rest_framework import *
+from .other_settings.oidc_providers import *
